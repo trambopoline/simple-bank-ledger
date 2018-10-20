@@ -3,6 +3,7 @@ import restify from "restify";
 import restifyErrors from "restify-errors";
 import passport from "passport-restify";
 import privateRoutes from "./routes/private";
+import publicRoutes from "./routes/public";
 import users from "./controllers/users";
 
 /* 
@@ -52,6 +53,8 @@ passport.use(
 		}
 	})
 );
+
+publicRoutes(server);
 
 // Put all public endpoints above this
 server.use(passport.authenticate("basic", { session: false }));

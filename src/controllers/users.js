@@ -17,7 +17,7 @@ export default {
 	 * Create a user
 	 * @param {*} data
 	 */
-	async create(res, data) {
+	async create(res, next, data) {
 		try {
 			let sanitizationResults = await indicative.sanitize(
 				data,
@@ -29,7 +29,7 @@ export default {
 				userSchema.validationModel
 			);
 			try {
-				userCache.set("1", validationResults);
+				userCache.set(validationResults.username, validationResults);
 				console.log("Successfully set");
 				res.status(201);
 				res.send(validationResults);
