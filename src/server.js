@@ -2,8 +2,8 @@ import config from "./config";
 import restify from "restify";
 import restifyErrors from "restify-errors";
 import passport from "passport-restify";
-import users from "./data-store/users";
 import privateRoutes from "./routes/private";
+import users from "./controllers/users";
 
 /* 
 * Configure authorization and configuration
@@ -13,7 +13,6 @@ const BasicStrategy = require("passport-http").BasicStrategy;
 const server = restify.createServer({
 	formatters: {
 		"application/json": function(req, res, body) {
-			// return JSON.stringify(body, null, '\t');
 			return JSON.stringify({ meta: res.meta, data: body });
 		}
 	},
@@ -36,19 +35,21 @@ server.use(restify.plugins.jsonp());
 // a user object, which will be set at `req.user` in route handlers after
 // authentication.
 passport.use(
-	new BasicStrategy(function(username, password, cb) {
-		users.findByUsername(username, function(err, user) {
-			if (err) {
-				return cb(err);
-			}
+	new BasicStrategy(function(username, password, done) {
+		try {
+			let user = users.getOne(username);
 			if (!user) {
-				return cb(null, false);
+				return done(null, false);
 			}
 			if (user.password != password) {
-				return cb(null, false);
+				return done(null, false);
 			}
-			return cb(null, user);
-		});
+			return done(null, user);
+		} catch (err) {
+			if (err) {
+				return done(err);
+			}
+		}
 	})
 );
 

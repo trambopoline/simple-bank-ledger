@@ -1,32 +1,35 @@
 import errors from "restify-errors";
 import indicative from "indicative";
 import NodeCache from "node-cache";
-import transactionSchema from "../models/transaction";
-const transactionCache = new NodeCache();
+import userSchema from "../models/user";
+const userCache = new NodeCache();
 
 /**
- * Populate a few dummy keys
+ * Populate a few dummy users
  */
-transactionCache.set("testkey1", "test value 1");
+userCache.set("jack", {
+	password: "secret",
+	email: "jack@example.com"
+});
 
 export default {
 	/**
-	 * Create a transaction
+	 * Create a user
 	 * @param {*} data
 	 */
 	async create(res, data) {
 		try {
 			let sanitizationResults = await indicative.sanitize(
 				data,
-				transactionSchema.sanitizationModel
+				userSchema.sanitizationModel
 			);
 
 			let validationResults = await indicative.validateAll(
 				sanitizationResults,
-				transactionSchema.validationModel
+				userSchema.validationModel
 			);
 			try {
-				transactionCache.set("1", validationResults);
+				userCache.set("1", validationResults);
 				console.log("Successfully set");
 				res.status(201);
 				res.send(validationResults);
@@ -44,14 +47,14 @@ export default {
 	},
 
 	/**
-	 * Get all transactions for a user
+	 * Get all users
 	 */
 	getAll(req, res, next) {
 		try {
-			let keys = transactionCache.keys();
+			let keys = userCache.keys();
 			let results = [];
 			for (const key of keys) {
-				results.push(transactionCache.get(key));
+				results.push(userCache.get(key));
 			}
 			res.status(200);
 			res.send(results);
@@ -65,7 +68,7 @@ export default {
 	/**
 	 * GET
 	 */
-	getOne(id) {
-		return next();
+	getOne(username) {
+		return userCache.get(username)
 	}
 };
