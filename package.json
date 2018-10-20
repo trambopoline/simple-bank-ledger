@@ -1,0 +1,34 @@
+{
+  "name": "simple-bank-ledger_back",
+  "version": "0.0.1",
+  "description": "The back end of a simple bank ledger. Log in/out, make deposits and withdrawals, and check balance and transaction history.",
+  "main": "src/server.js",
+  "scripts": {
+    "dev-start": "nodemon --exec babel-node src/server.js",
+    "babel": "babel src/server.js --out-dir dist",
+    "start": "node dist/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bank",
+    "ledger"
+  ],
+  "author": "Devin Dodson",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.4",
+    "indicative": "^5.0.8",
+    "node-cache": "^4.2.0",
+    "nodemon": "^1.18.4",
+    "passport": "^0.4.0",
+    "passport-http": "^0.3.0",
+    "passport-local": "^1.0.0",
+    "passport-restify": "^1.0.1",
+    "restify": "^7.2.1",
+    "restify-errors": "^6.1.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0"
+  }
+}
