@@ -2,32 +2,33 @@ import errors from "restify-errors";
 import indicative from "indicative";
 import NodeCache from "node-cache";
 import transactionSchema from "../models/transaction";
+import withdrawalSchema from "../models/withdrawal";
 const transactionCache = new NodeCache();
-
-/**
- * Populate a few dummy keys
- */
-transactionCache.set("testkey1", "test value 1");
 
 export default {
 	/**
 	 * Create a transaction
 	 * @param {*} data
 	 */
-	async create(res, data) {
+	async create(res, next, data, schema = transactionSchema) {
 		try {
 			let sanitizationResults = await indicative.sanitize(
 				data,
-				transactionSchema.sanitizationModel
+				schema.sanitizationModel
 			);
 
+			// Insert the createdAt date+time ( this overwrites the user value, if set )
+			sanitizationResults.createdAt = Date.now();
+
+			console.log(sanitizationResults);
 			let validationResults = await indicative.validateAll(
 				sanitizationResults,
-				transactionSchema.validationModel
+				schema.validationModel
 			);
 			try {
-				transactionCache.set("1", validationResults);
-				console.log("Successfully set");
+				const crypto = require("crypto");
+				const id = crypto.randomBytes(16).toString("hex");
+				transactionCache.set(id, validationResults);
 				res.status(201);
 				res.send(validationResults);
 				return next();
@@ -43,6 +44,15 @@ export default {
 		}
 	},
 
+	withdraw(res, next, data) {
+		this.create(res, next, data, withdrawalSchema)
+	},
+
+	deposit(res, next, data) {
+
+
+	},
+
 	/**
 	 * Get all transactions for a user
 	 */
@@ -53,6 +63,8 @@ export default {
 			for (const key of keys) {
 				results.push(transactionCache.get(key));
 			}
+			// res.meta ? res.meta.numberOfTransactions = results.length : { numberOfTransactions: results.length };
+			res.meta =   { numberOfTransactions: results.length };
 			res.status(200);
 			res.send(results);
 			return next();

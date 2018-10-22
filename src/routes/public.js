@@ -5,7 +5,7 @@ export default function(server) {
 	/**
 	 * POST
 	 */
-	server.post("/users", async (req, res, next) => {
+	server.post("/user", async (req, res, next) => {
 		if (!req.is("application/json")) {
 			return next(
 				new errors.InvalidContentError("Expects 'application/json'")
@@ -14,13 +14,5 @@ export default function(server) {
 		let data = req.body || {};
 		return userController.create(res, next, data);
 	});
-	
-	/**
-	 * POST
-	 */
-	server.post("/login", (req, res, next) => {
 
-		let data = req.body || {};
-		return userController.logIn( res, next, data, req.params.username, req.params.password);
-	});
 }

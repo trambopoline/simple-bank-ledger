@@ -1,7 +1,16 @@
 import transactionController from "../controllers/transactions";
+import userController from "../controllers/users";
 import errors from "restify-errors";
 
 export default function(server) {
+	/**
+	 * POST
+	 */
+	server.post("/login", (req, res, next) => {
+		// console.log(req.user);
+		return userController.logIn(res, next, req.user);
+	});
+
 	/**
 	 * POST
 	 */
@@ -11,8 +20,8 @@ export default function(server) {
 				new errors.InvalidContentError("Expects 'application/json'")
 			);
 		}
-		let data = req.body || {};
-		return transactionController.create(res, data);
+		const data = req.body || {};
+		return transactionController.create(res, next, data);
 	});
 
 	/**
