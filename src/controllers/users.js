@@ -2,7 +2,7 @@ import errors from "restify-errors";
 import indicative from "indicative";
 import NodeCache from "node-cache";
 import userSchema from "../models/user";
-const userCache = new NodeCache();
+const userCache = new NodeCache({errorOnMissing: true});
 
 /**
  * Populate a few dummy users
@@ -49,7 +49,7 @@ export default {
 	/**
 	 * Get all users
 	 */
-	getAll(req, res, next) {
+	getAll( res, next) {
 		try {
 			let keys = userCache.keys();
 			let results = [];
@@ -62,6 +62,23 @@ export default {
 		} catch (err) {
 			console.log(err);
 			return next(new errors.InternalServerError());
+		}
+	},
+
+	authenticate( username, password, done )
+	{
+		try {
+			let user = userCache.get(username);
+			if (user.password != password) {
+				console.error(`Incorrect password '${password}'`);
+				return done(null, false);
+			}
+			return done(null, user);
+		} catch (err) {
+			if (err) {
+				console.error(`Can't find user '${username}'`);
+				return done(null, false);
+			}
 		}
 	},
 

@@ -37,20 +37,7 @@ server.use(restify.plugins.jsonp());
 // authentication.
 passport.use(
 	new BasicStrategy(function(username, password, done) {
-		try {
-			let user = users.getOne(username);
-			if (!user) {
-				return done(null, false);
-			}
-			if (user.password != password) {
-				return done(null, false);
-			}
-			return done(null, user);
-		} catch (err) {
-			if (err) {
-				return done(err);
-			}
-		}
+		users.authenticate( username, password, done)
 	})
 );
 
