@@ -14,18 +14,13 @@ export default function(server) {
 		let data = req.body || {};
 		return userController.create(res, next, data);
 	});
-
+	
 	/**
-	 * LIST
+	 * POST
 	 */
-	server.get("/users", (req, res, next) => {
-		return userController.getAll(req, res, next);
-	});
+	server.post("/login", (req, res, next) => {
 
-	/**
-	 * GET
-	 */
-	server.get("/users/:username", (req, res, next) => {
-		return userController.getOne(req.params.username);
+		let data = req.body || {};
+		return userController.logIn( res, next, data, req.params.username, req.params.password);
 	});
 }

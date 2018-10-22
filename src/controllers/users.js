@@ -83,9 +83,12 @@ export default {
 	},
 
 	/**
-	 * GET
+	 * "log in" a user. This just verifies the user credentials are valid, and returns info accordingly. 
 	 */
-	getOne(username) {
+	logIn( res, username, password) {
+		this.authenticate( username, password, ( error, user ) => {
+			console.log(error, user);
+		} )
 		return userCache.get(username)
 	}
 };
