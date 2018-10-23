@@ -42,10 +42,4 @@ export default function(server) {
 		return transactionController.getAll(req, res, next);
 	});
 
-	/**
-	 * GET
-	 */
-	server.get("/transactions/:transaction_id", (req, res, next) => {
-		return transactionController.getOne(req.params.transaction_id);
-	});
 }

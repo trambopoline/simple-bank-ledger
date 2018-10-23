@@ -11,9 +11,21 @@ import users from "./controllers/users";
 */
 const BasicStrategy = require("passport-http").BasicStrategy;
 
+passport.use(
+	new BasicStrategy(function(username, password, done) {
+		return done(null, users.authenticate(username, password));
+	})
+);
+
+/* 
+* Set up the server
+*/
 const server = restify.createServer({
 	formatters: {
 		"application/json": function(req, res, body) {
+			if(body.message){
+				return JSON.stringify({ meta: res.meta, error: body });
+			}
 			return JSON.stringify({ meta: res.meta, data: body });
 		}
 	},
@@ -28,23 +40,10 @@ server.use(restify.plugins.bodyParser());
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.jsonp());
 
-// Configure the Basic strategy for use by Passport.
-//
-// The Basic strategy requires a `verify` function which receives the
-// credentials (`username` and `password`) contained in the request.  The
-// function must verify that the password is correct and then invoke `cb` with
-// a user object, which will be set at `req.user` in route handlers after
-// authentication.
-passport.use(
-	new BasicStrategy(function(username, password, done) {
-		users.authenticate( username, password, done)
-	})
-);
-
 publicRoutes(server);
 
-// Put all public endpoints above this
-server.use(passport.authenticate("basic", { session: false }));
+// Any routes after here will require user authentication
+server.use(passport.authenticate("basic", { session: false })); 
 
 privateRoutes(server);
 
