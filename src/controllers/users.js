@@ -2,12 +2,13 @@ import errors from "restify-errors";
 import indicative from "indicative";
 import NodeCache from "node-cache";
 import userSchema from "../models/user";
-const userCache = new NodeCache({errorOnMissing: true});
+const userCache = new NodeCache({ errorOnMissing: true });
 
 /**
  * Populate a few dummy users
  */
 userCache.set("jack", {
+	username: "jack",
 	password: "secret",
 	email: "jack@example.com"
 });
@@ -15,24 +16,36 @@ userCache.set("jack", {
 export default {
 	/**
 	 * Create a user
-	 * @param {*} data
+	 * @param {*} userData
 	 */
-	async create(res, next, data) {
+	async create(res, next, userData) {
 		try {
-			let sanitizationResults = await indicative.sanitize(
-				data,
+			let cleanUserData = await indicative.sanitize(
+				userData,
 				userSchema.sanitizationModel
 			);
 
-			let validationResults = await indicative.validateAll(
-				sanitizationResults,
+			// See if username is taken
+			try {
+				console.log("Check for user already existing", cleanUserData);
+				userCache.get(cleanUserData.username);
+				return next(
+					new errors.UnprocessableEntityError(
+						"That username is taken"
+					)
+				);
+				// return
+			} catch (e) {}
+
+			let validatedUserData = await indicative.validateAll(
+				cleanUserData,
 				userSchema.validationModel
 			);
 			try {
-				userCache.set(validationResults.username, validationResults);
+				userCache.set(validatedUserData.username, validatedUserData);
 				console.log("Successfully set");
 				res.status(201);
-				res.send(validationResults);
+				res.send(validatedUserData);
 				return next();
 			} catch (error) {
 				return next(new errors.InternalServerError(error));
@@ -49,7 +62,7 @@ export default {
 	/**
 	 * Get all users
 	 */
-	getAll( res, next) {
+	getAll(res, next) {
 		try {
 			let keys = userCache.keys();
 			let results = [];
@@ -65,30 +78,36 @@ export default {
 		}
 	},
 
-	authenticate( username, password, done )
-	{
+	/**
+	 * @returns User if found and password verified, false otherwise
+	 * @param {string} username
+	 * @param {string} password
+	 */
+	authenticate(username, password) {
 		try {
 			let user = userCache.get(username);
 			if (user.password != password) {
 				console.error(`Incorrect password '${password}'`);
-				return done(null, false);
+				return false;
 			}
-			return done(null, user);
+			return user;
 		} catch (err) {
 			if (err) {
 				console.error(`Can't find user '${username}'`);
-				return done(null, false);
+				return false;
 			}
 		}
 	},
 
 	/**
-	 * "log in" a user. This just verifies the user credentials are valid, and returns info accordingly. 
+	 * "log in" a user. This just returns a user object.
 	 */
-	logIn( res, username, password) {
-		this.authenticate( username, password, ( error, user ) => {
-			console.log(error, user);
-		} )
-		return userCache.get(username)
+	logIn(res, next, user) {
+		// this.authenticate( username, password, ( error, user ) => {
+		// 	console.log(error, user);
+		// } )
+		// console.log(username, password);
+		res.send({ user });
+		return next();
 	}
 };

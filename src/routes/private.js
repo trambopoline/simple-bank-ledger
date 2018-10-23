@@ -1,18 +1,38 @@
 import transactionController from "../controllers/transactions";
+import userController from "../controllers/users";
 import errors from "restify-errors";
 
 export default function(server) {
+	
+	server.post("/login", (req, res, next) => {
+		// console.log(req.user);
+		return userController.logIn(res, next, req.user);
+	});
+
 	/**
 	 * POST
 	 */
-	server.post("/transactions", async (req, res, next) => {
+	server.post("/transactions/withdrawals", async (req, res, next) => {
 		if (!req.is("application/json")) {
 			return next(
 				new errors.InvalidContentError("Expects 'application/json'")
 			);
 		}
-		let data = req.body || {};
-		return transactionController.create(res, data);
+		const data = req.body || {};
+		return transactionController.withdraw(res, next, data);
+	});
+
+	/**
+	 * POST
+	 */
+	server.post("/transactions/deposits", async (req, res, next) => {
+		if (!req.is("application/json")) {
+			return next(
+				new errors.InvalidContentError("Expects 'application/json'")
+			);
+		}
+		const data = req.body || {};
+		return transactionController.deposit(res, next, data);
 	});
 
 	/**
