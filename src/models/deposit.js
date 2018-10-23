@@ -1,10 +1,9 @@
 export default {
 	validationModel: {
 		createdAt: "required|date",
-		value: "required|number"
+		amount: "required|number|above:0"
 	},
 	sanitizationModel: {
-		createdAt: "trim",
-		value: "trim"
+		amount: "trim"
 	}
 };
