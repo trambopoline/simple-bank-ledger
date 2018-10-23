@@ -1,7 +1,6 @@
 import errors from "restify-errors";
 import indicative from "indicative";
 import NodeCache from "node-cache";
-import transactionSchema from "../models/transaction";
 import withdrawalSchema from "../models/withdrawal";
 import depositSchema from "../models/deposit";
 
@@ -51,7 +50,7 @@ export default {
  * Create a transaction
  * @param {*} data
  */
-async function create(res, next, data, schema = transactionSchema) {
+async function create(res, next, data, schema ) {
 	try {
 		let sanitizationResults = await indicative.sanitize(
 			data,
