@@ -30,11 +30,10 @@ export default {
 				console.log("Check for user already existing", cleanUserData);
 				userCache.get(cleanUserData.username);
 				return next(
-					new errors.UnprocessableEntityError(
+					new errors.BadRequestError(
 						"That username is taken"
 					)
 				);
-				// return
 			} catch (e) {}
 
 			let validatedUserData = await indicative.validateAll(
@@ -45,7 +44,7 @@ export default {
 				userCache.set(validatedUserData.username, validatedUserData);
 				console.log("Successfully set");
 				res.status(201);
-				res.send(validatedUserData);
+				res.send({user: validatedUserData});
 				return next();
 			} catch (error) {
 				return next(new errors.InternalServerError(error));
@@ -55,7 +54,7 @@ export default {
 			errs.forEach(err => {
 				errorString += `${err.message}\n`;
 			});
-			return next(new errors.UnprocessableEntityError(errorString));
+			return next(new errors.BadRequestError(errorString));
 		}
 	},
 
