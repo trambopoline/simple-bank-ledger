@@ -5,7 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "dev-start": "nodemon --exec babel-node src/server.js",
-    "babel": "babel src/server.js --out-dir dist",
+    "babel": "babel src --out-dir dist",
     "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,7 +19,6 @@
     "express": "^4.16.4",
     "indicative": "^5.0.8",
     "node-cache": "^4.2.0",
-    "nodemon": "^1.18.4",
     "passport": "^0.4.0",
     "passport-http": "^0.3.0",
     "passport-local": "^1.0.0",
@@ -28,6 +27,7 @@
     "restify-errors": "^6.1.1"
   },
   "devDependencies": {
+    "nodemon": "^1.18.4",
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0"
   }
