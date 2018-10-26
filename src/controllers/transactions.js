@@ -97,6 +97,6 @@ async function create(res, next, data, schema ) {
 		errs.forEach(err => {
 			errorString += `${err.message}\n`;
 		});
-		return next(new errors.UnprocessableEntityError(errorString));
+		return next(new errors.BadRequestError(errorString));
 	}
 };

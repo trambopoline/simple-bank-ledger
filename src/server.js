@@ -40,12 +40,9 @@ server.use(restify.plugins.bodyParser());
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.jsonp());
 
-publicRoutes(server);
+publicRoutes(server); 
 
-// Any routes after here will require user authentication
-server.use(passport.authenticate("basic", { session: false })); 
-
-privateRoutes(server);
+privateRoutes(server, passport.authenticate("basic", { session: false }));
 
 server.listen(config.port, function() {
 	console.log("%s listening at %s", server.name, server.url);
