@@ -2,12 +2,15 @@
   "name": "simple-bank-ledger_back",
   "version": "0.0.1",
   "description": "The back end of a simple bank ledger. Log in/out, make deposits and withdrawals, and check balance and transaction history.",
+  "repository": {
+		"type": "git",
+		"url": "https://github.com/trambopoline/simple-bank-ledger_back"
+	},
   "main": "src/server.js",
   "scripts": {
     "dev-start": "nodemon --exec babel-node src/server.js",
-    "babel": "babel src --out-dir dist",
-    "start": "node dist/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prestart": "babel src --out-dir dist",
+    "start": "node dist/server.js"
   },
   "keywords": [
     "bank",
