@@ -3,10 +3,6 @@ import errors from "restify-errors";
 
 export default function(server) {
 
-	// server.get("/public",  (req, res, next) => {
-	// 	res.send("HEEY")
-	// })
-
 	/**
 	 * POST
 	 */
